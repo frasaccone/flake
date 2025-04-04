@@ -52,7 +52,7 @@
                 /var/lib/hitch/full.pem
 
               ${pkgs.hitch}/bin/hitch \
-                --backend [localhost]:80 \
+                --backend [127.0.0.1]:80 \
                 --frontend [*]:443 \
                 --backend-connect-timeout 30 \
                 --ssl-handshake-timeout 30 \
