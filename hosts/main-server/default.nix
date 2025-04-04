@@ -94,16 +94,6 @@ rec {
           pkgs.lowdown
         ];
       };
-      symlinks = {
-        "index.html" = "/var/tmp/site/html/index.html";
-        "blog" = "/var/tmp/site/html/blog";
-        "code" = "/var/tmp/site/html/code";
-        "public" = "${inputs.site}/public";
-        "favicon.ico" = "${inputs.site}/favicon.ico";
-        "robots.txt" = "${inputs.site}/robots.txt";
-        "atom.xml" = "/var/tmp/site/html/atom.xml";
-        "sitemap.xml" = "/var/tmp/site/html/sitemap.xml";
-      };
       acme = {
         enable = true;
         email = "admin@${domain}";
