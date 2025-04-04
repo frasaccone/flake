@@ -68,18 +68,18 @@ rec {
           let
             generateAtom = builtins.concatStringsSep " " [
               "${inputs.site}/scripts/generate-atom.sh"
-              "/var/tmp/site/html"
+              config.modules.hermes.directory
               "\"Francesco Saccone's blog\""
               "https://${domain}"
             ];
             generateSitemap = builtins.concatStringsSep " " [
               "${inputs.site}/scripts/generate-sitemap.sh"
-              "/var/tmp/site/html"
+              config.modules.hermes.directory
               "https://${domain}"
             ];
             generateHtml = builtins.concatStringsSep " " [
               "${inputs.site}/scripts/generate-html.sh"
-              "/var/tmp/site/html"
+              config.modules.hermes.directory
             ];
           in
           [
