@@ -57,30 +57,6 @@
 
     systemd = {
       services = {
-        hermes-setup = {
-          enable = true;
-          wantedBy = [ "multi-user.target" ];
-          serviceConfig =
-            let
-              permissions = pkgs.writeShellScriptBin "permissions" ''
-                ${pkgs.sbase}/bin/chmod -R g+rwx \
-                ${config.modules.hermes.directory}
-              '';
-              clean = pkgs.writeShellScriptBin "clean" ''
-                ${pkgs.sbase}/bin/rm -rf \
-                ${config.modules.hermes.directory}/*
-              '';
-            in
-            {
-              User = "root";
-              Group = "root";
-              Type = "oneshot";
-              ExecStart = [
-                "${permissions}/bin/permissions"
-                "${clean}/bin/clean"
-              ];
-            };
-        };
         hermes =
           let
             inherit (config.modules.hermes) preStart;
@@ -88,7 +64,6 @@
           rec {
             enable = true;
             wantedBy = [ "multi-user.target" ];
-            requires = [ "hermes-setup.service" ];
             after = [ "network.target" ];
             path = preStart.packages;
             serviceConfig =
