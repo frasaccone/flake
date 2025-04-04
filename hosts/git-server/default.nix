@@ -13,7 +13,7 @@ let
   scripts = import ./scripts.nix { inherit config pkgs inputs; };
 
   stagit = {
-    destDir = "/var/tmp/stagit";
+    destDir = config.modules.hermes.directory;
     reposDir = config.modules.git.directory;
   };
 in
