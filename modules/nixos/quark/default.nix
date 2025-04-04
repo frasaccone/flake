@@ -11,9 +11,9 @@
     ./tls
   ];
 
-  options.modules.hermes = {
+  options.modules.quark = {
     enable = lib.mkOption {
-      description = "Whether to enable Hermes.";
+      description = "Whether to enable Quark.";
       default = false;
       type = lib.types.bool;
     };
@@ -39,27 +39,27 @@
     };
   };
 
-  config = lib.mkIf config.modules.hermes.enable {
+  config = lib.mkIf config.modules.quark.enable {
     users = {
       users = {
-        hermes = {
+        quark = {
           hashedPassword = "!";
           isSystemUser = true;
-          group = "hermes";
+          group = "quark";
           createHome = true;
-          home = config.modules.hermes.directory;
+          home = config.modules.quark.directory;
         };
       };
       groups = {
-        hermes = { };
+        quark = { };
       };
     };
 
     systemd = {
       services = {
-        hermes =
+        quark =
           let
-            inherit (config.modules.hermes) preStart;
+            inherit (config.modules.quark) preStart;
           in
           rec {
             enable = true;
@@ -68,16 +68,16 @@
             path = preStart.packages;
             serviceConfig =
               let
-                inherit (config.modules.hermes) customHeaderScripts tls;
+                inherit (config.modules.quark) customHeaderScripts tls;
                 script = pkgs.writeShellScriptBin "script" ''
                   ${builtins.concatStringsSep "\n" preStart.scripts}
 
-                  ${pkgs.hermes}/bin/hermes \
-                    -d ${config.modules.hermes.directory} \
+                  ${pkgs.quark}/bin/quark \
                     -p 80 \
-                    -i index.html \
-                    -u hermes \
-                    -g hermes
+                    -u quark \
+                    -g quark \
+                    -d ${config.modules.quark.directory} \
+                    -i index.html
                 '';
               in
               {
@@ -90,11 +90,11 @@
           };
       };
       paths = {
-        hermes = {
+        quark = {
           enable = true;
           wantedBy = [ "multi-user.target" ];
           pathConfig = {
-            PathModified = config.modules.hermes.directory;
+            PathModified = config.modules.quark.directory;
           };
         };
       };

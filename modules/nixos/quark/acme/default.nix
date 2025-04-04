@@ -6,7 +6,7 @@
   ...
 }:
 {
-  options.modules.hermes.acme = {
+  options.modules.quark.acme = {
     enable = lib.mkOption {
       description = "Whether to enable the Certbot ACME client.";
       default = false;
@@ -37,15 +37,15 @@
 
   config =
     let
-      inherit (config.modules.hermes) acme;
+      inherit (config.modules.quark) acme;
     in
-    lib.mkIf (acme.enable && config.modules.hermes.enable) {
+    lib.mkIf (acme.enable && config.modules.quark.enable) {
       systemd = {
         services = {
           acme = {
             enable = true;
             wantedBy = [ "multi-user.target" ];
-            after = [ "hermes-setup.service" ];
+            after = [ "quark-setup.service" ];
             serviceConfig =
               let
                 domains = [ acme.domain ] ++ acme.extraDomains;
@@ -55,7 +55,7 @@
                   | ${pkgs.gnugrep}/bin/grep -q "No certificates"; then
                     ${pkgs.certbot}/bin/certbot certonly --quiet --webroot \
                     --agree-tos --email ${acme.email} \
-                    -w ${config.modules.hermes.directory} \
+                    -w ${config.modules.quark.directory} \
                     -d ${builtins.concatStringsSep " -d " domains}
                   else
                     ${pkgs.certbot}/bin/certbot renew --quiet

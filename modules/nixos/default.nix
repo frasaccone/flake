@@ -4,11 +4,11 @@
     ./agate
     ./bind
     ./doas
-    ./hermes
     ./git
     ./monero
     ./networkmanager
     ./openssh
+    ./quark
     ./tlp
     ./wayland
   ];

@@ -6,7 +6,7 @@
   ...
 }:
 {
-  options.modules.hermes.tls = {
+  options.modules.quark.tls = {
     enable = lib.mkOption {
       description = "Whether to enable the Hitch reverse proxy.";
       default = false;
@@ -20,15 +20,15 @@
 
   config =
     let
-      inherit (config.modules.hermes) tls;
+      inherit (config.modules.quark) tls;
     in
-    lib.mkIf (tls.enable && config.modules.hermes.enable) {
+    lib.mkIf (tls.enable && config.modules.quark.enable) {
       users = {
         users = {
           hitch = {
             hashedPassword = "!";
             isSystemUser = true;
-            group = "hermes";
+            group = "quark";
             createHome = true;
             home = "/var/lib/hitch";
           };
