@@ -11,9 +11,9 @@
     ./tls
   ];
 
-  options.modules.darkhttpd = {
+  options.modules.hermes = {
     enable = lib.mkOption {
-      description = "Whether to enable Darkhttpd.";
+      description = "Whether to enable Hermes.";
       default = false;
       type = lib.types.bool;
     };
@@ -47,43 +47,43 @@
     };
   };
 
-  config = lib.mkIf config.modules.darkhttpd.enable {
+  config = lib.mkIf config.modules.hermes.enable {
     users = {
       users = {
-        darkhttpd = {
+        hermes = {
           hashedPassword = "!";
           isSystemUser = true;
-          group = "darkhttpd";
+          group = "hermes";
           createHome = true;
-          home = config.modules.darkhttpd.directory;
+          home = config.modules.hermes.directory;
         };
       };
       groups = {
-        darkhttpd = { };
+        hermes = { };
       };
     };
 
     systemd = {
       services = {
-        darkhttpd-setup = {
+        hermes-setup = {
           enable = true;
           wantedBy = [ "multi-user.target" ];
           serviceConfig =
             let
               permissions = pkgs.writeShellScriptBin "permissions" ''
                 ${pkgs.sbase}/bin/chmod -R g+rwx \
-                ${config.modules.darkhttpd.directory}
+                ${config.modules.hermes.directory}
               '';
               clean = pkgs.writeShellScriptBin "clean" ''
                 ${pkgs.sbase}/bin/rm -rf \
-                ${config.modules.darkhttpd.directory}/*
+                ${config.modules.hermes.directory}/*
               '';
               symlinks =
-                config.modules.darkhttpd.symlinks
+                config.modules.hermes.symlinks
                 |> builtins.mapAttrs (
                   name: target:
                   let
-                    inherit (config.modules.darkhttpd) directory;
+                    inherit (config.modules.hermes) directory;
                   in
                   ''
                     ${pkgs.sbase}/bin/mkdir -p \
@@ -92,7 +92,7 @@
                     ${pkgs.sbase}/bin/ln -sf ${target} \
                     ${directory}/${name}
 
-                    ${pkgs.sbase}/bin/chown -Rh darkhttpd:darkhttpd \
+                    ${pkgs.sbase}/bin/chown -Rh hermes:hermes \
                     ${directory}/${name}
                   ''
                 )
@@ -111,31 +111,28 @@
               ];
             };
         };
-        darkhttpd =
+        hermes =
           let
-            inherit (config.modules.darkhttpd) preStart;
+            inherit (config.modules.hermes) preStart;
           in
           rec {
             enable = true;
             wantedBy = [ "multi-user.target" ];
-            requires = [ "darkhttpd-setup.service" ];
+            requires = [ "hermes-setup.service" ];
             after = [ "network.target" ];
             path = preStart.packages;
             serviceConfig =
               let
-                inherit (config.modules.darkhttpd) customHeaderScripts tls;
+                inherit (config.modules.hermes) customHeaderScripts tls;
                 script = pkgs.writeShellScriptBin "script" ''
                   ${builtins.concatStringsSep "\n" preStart.scripts}
 
-                  ${pkgs.darkhttpd}/bin/darkhttpd \
-                    ${config.modules.darkhttpd.directory} \
-                    --port 80 \
-                    --index index.html \
-                    --no-listing \
-                    --uid darkhttpd \
-                    --gid darkhttpd \
-                    --no-server-id \
-                    --ipv6 ${if tls.enable then "--forward-https" else ""}
+                  ${pkgs.hermes}/bin/hermes \
+                    -d ${config.modules.hermes.directory} \
+                    -p 80 \
+                    -i index.html \
+                    -u hermes \
+                    -g hermes
                 '';
               in
               {
@@ -148,13 +145,13 @@
           };
       };
       paths = {
-        darkhttpd = {
+        hermes = {
           enable = true;
           wantedBy = [ "multi-user.target" ];
           pathConfig = {
             PathModified = [
-              config.modules.darkhttpd.directory
-            ] ++ builtins.attrValues config.modules.darkhttpd.symlinks;
+              config.modules.hermes.directory
+            ] ++ builtins.attrValues config.modules.hermes.symlinks;
           };
         };
       };

@@ -3,8 +3,8 @@
   imports = [
     ./agate
     ./bind
-    ./darkhttpd
     ./doas
+    ./hermes
     ./git
     ./monero
     ./networkmanager

@@ -6,7 +6,7 @@
   ...
 }:
 {
-  options.modules.darkhttpd.tls = {
+  options.modules.hermes.tls = {
     enable = lib.mkOption {
       description = "Whether to enable the Hitch reverse proxy.";
       default = false;
@@ -20,15 +20,15 @@
 
   config =
     let
-      inherit (config.modules.darkhttpd) tls;
+      inherit (config.modules.hermes) tls;
     in
-    lib.mkIf (tls.enable && config.modules.darkhttpd.enable) {
+    lib.mkIf (tls.enable && config.modules.hermes.enable) {
       users = {
         users = {
           hitch = {
             hashedPassword = "!";
             isSystemUser = true;
-            group = "darkhttpd";
+            group = "hermes";
             createHome = true;
             home = "/var/lib/hitch";
           };

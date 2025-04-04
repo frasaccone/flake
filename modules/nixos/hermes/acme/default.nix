@@ -6,7 +6,7 @@
   ...
 }:
 {
-  options.modules.darkhttpd.acme = {
+  options.modules.hermes.acme = {
     enable = lib.mkOption {
       description = "Whether to enable the Certbot ACME client.";
       default = false;
@@ -37,15 +37,15 @@
 
   config =
     let
-      inherit (config.modules.darkhttpd) acme;
+      inherit (config.modules.hermes) acme;
     in
-    lib.mkIf (acme.enable && config.modules.darkhttpd.enable) {
+    lib.mkIf (acme.enable && config.modules.hermes.enable) {
       systemd = {
         services = {
           acme = {
             enable = true;
             wantedBy = [ "multi-user.target" ];
-            after = [ "darkhttpd-setup.service" ];
+            after = [ "hermes-setup.service" ];
             serviceConfig =
               let
                 domains = [ acme.domain ] ++ acme.extraDomains;
@@ -55,7 +55,7 @@
                   | ${pkgs.gnugrep}/bin/grep -q "No certificates"; then
                     ${pkgs.certbot}/bin/certbot certonly --quiet --webroot \
                     --agree-tos --email ${acme.email} \
-                    -w ${config.modules.darkhttpd.directory} \
+                    -w ${config.modules.hermes.directory} \
                     -d ${builtins.concatStringsSep " -d " domains}
                   else
                     ${pkgs.certbot}/bin/certbot renew --quiet

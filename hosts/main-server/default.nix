@@ -61,7 +61,7 @@ rec {
       inherit (networking) domain;
       records = import ./dns.nix domain;
     };
-    darkhttpd = {
+    hermes = {
       enable = true;
       preStart = {
         scripts =
@@ -114,7 +114,7 @@ rec {
         enable = true;
         pemFiles =
           let
-            inherit (config.modules.darkhttpd.acme) directory;
+            inherit (config.modules.hermes.acme) directory;
           in
           [
             "${directory}/${domain}/fullchain.pem"

@@ -28,7 +28,7 @@ in
       domain = rootDomain;
       records = import "${mainServer}/dns.nix" rootDomain;
     };
-    darkhttpd = {
+    hermes = {
       enable = true;
       preStart = {
         scripts =
@@ -76,7 +76,7 @@ in
         enable = true;
         pemFiles =
           let
-            inherit (config.modules.darkhttpd.acme) directory;
+            inherit (config.modules.hermes.acme) directory;
           in
           [
             "${directory}/${gitDomain}/fullchain.pem"
