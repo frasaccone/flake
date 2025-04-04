@@ -28,7 +28,7 @@
           hitch = {
             hashedPassword = "!";
             isSystemUser = true;
-            group = "quark";
+            group = "hitch";
             createHome = true;
             home = "/var/lib/hitch";
           };
