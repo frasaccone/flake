@@ -23,14 +23,6 @@
       readOnly = true;
       type = lib.types.uniq lib.types.path;
     };
-    symlinks = lib.mkOption {
-      description = ''
-        For each symlink name, which will be created in the root directory, its
-        target.
-      '';
-      default = { };
-      type = lib.types.attrsOf lib.types.path;
-    };
     preStart = {
       scripts = lib.mkOption {
         description = ''
@@ -78,27 +70,6 @@
                 ${pkgs.sbase}/bin/rm -rf \
                 ${config.modules.hermes.directory}/*
               '';
-              symlinks =
-                config.modules.hermes.symlinks
-                |> builtins.mapAttrs (
-                  name: target:
-                  let
-                    inherit (config.modules.hermes) directory;
-                  in
-                  ''
-                    ${pkgs.sbase}/bin/mkdir -p \
-                    ${directory}/${builtins.dirOf name}
-
-                    ${pkgs.sbase}/bin/ln -sf ${target} \
-                    ${directory}/${name}
-
-                    ${pkgs.sbase}/bin/chown -Rh hermes:hermes \
-                    ${directory}/${name}
-                  ''
-                )
-                |> builtins.attrValues
-                |> builtins.concatStringsSep "\n"
-                |> pkgs.writeShellScriptBin "symlinks";
             in
             {
               User = "root";
@@ -107,7 +78,6 @@
               ExecStart = [
                 "${permissions}/bin/permissions"
                 "${clean}/bin/clean"
-                "${symlinks}/bin/symlinks"
               ];
             };
         };
@@ -149,9 +119,7 @@
           enable = true;
           wantedBy = [ "multi-user.target" ];
           pathConfig = {
-            PathModified = [
-              config.modules.hermes.directory
-            ] ++ builtins.attrValues config.modules.hermes.symlinks;
+            PathModified = config.modules.hermes.directory;
           };
         };
       };
